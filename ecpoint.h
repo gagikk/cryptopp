@@ -15,6 +15,9 @@
 
 NAMESPACE_BEGIN(CryptoPP)
 
+static Integer const _Z;
+static PolynomialMod2 const _PZ;
+
 /// \brief Elliptical Curve Point over GF(p), where p is prime
 /// \since Crypto++ 2.0
 struct CRYPTOPP_DLL ECPPoint
@@ -23,27 +26,27 @@ struct CRYPTOPP_DLL ECPPoint
 
 	/// \brief Construct an ECPPoint
 	/// \details identity is set to <tt>true</tt>
-	ECPPoint() : identity(true) {}
+        ECPPoint()/* : identity(true)*/ {}
 
 	/// \brief Construct an ECPPoint from coordinates
 	/// \details identity is set to <tt>false</tt>
 	ECPPoint(const Integer &x, const Integer &y)
-		: x(x), y(y), identity(false) {}
+                : x(x), y(y)/*, identity(false)*/ {}
 
 	/// \brief Tests points for equality
 	/// \param t the other point
 	/// \returns true if the points are equal, false otherwise
 	bool operator==(const ECPPoint &t) const
-		{return (identity && t.identity) || (!identity && !t.identity && x==t.x && y==t.y);}
+                {return (identity() && t.identity()) || (!identity() && !t.identity() && x==t.x && y==t.y);}
 
 	/// \brief Tests points for ordering
 	/// \param t the other point
 	/// \returns true if this point is less than other, false otherwise
 	bool operator< (const ECPPoint &t) const
-		{return identity ? !t.identity : (!t.identity && (x<t.x || (x==t.x && y<t.y)));}
+                {return identity() ? !t.identity() : (!t.identity() && (x<t.x || (x==t.x && y<t.y)));}
 
 	Integer x, y;
-	bool identity;
+        bool identity() const { return ((x==y) && (x==_Z)); }
 };
 
 CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<ECPPoint>;
@@ -56,27 +59,27 @@ struct CRYPTOPP_DLL EC2NPoint
 
 	/// \brief Construct an EC2NPoint
 	/// \details identity is set to <tt>true</tt>
-	EC2NPoint() : identity(true) {}
+        EC2NPoint()/* : identity(true)*/ {}
 
 	/// \brief Construct an EC2NPoint from coordinates
 	/// \details identity is set to <tt>false</tt>
 	EC2NPoint(const PolynomialMod2 &x, const PolynomialMod2 &y)
-		: x(x), y(y), identity(false) {}
+                : x(x), y(y)/*, identity(false)*/ {}
 
 	/// \brief Tests points for equality
 	/// \param t the other point
 	/// \returns true if the points are equal, false otherwise
 	bool operator==(const EC2NPoint &t) const
-		{return (identity && t.identity) || (!identity && !t.identity && x==t.x && y==t.y);}
+                {return (identity() && t.identity()) || (!identity() && !t.identity() && x==t.x && y==t.y);}
 
 	/// \brief Tests points for ordering
 	/// \param t the other point
 	/// \returns true if this point is less than other, false otherwise
 	bool operator< (const EC2NPoint &t) const
-		{return identity ? !t.identity : (!t.identity && (x<t.x || (x==t.x && y<t.y)));}
+                {return identity() ? !t.identity() : (!t.identity() && (x<t.x || (x==t.x && y<t.y)));}
 
 	PolynomialMod2 x, y;
-	bool identity;
+        bool identity() const { return ((x==y) && (x==_PZ)); }
 };
 
 CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<EC2NPoint>;

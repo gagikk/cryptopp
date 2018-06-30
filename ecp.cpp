@@ -17,12 +17,12 @@ NAMESPACE_BEGIN(CryptoPP)
 ANONYMOUS_NAMESPACE_BEGIN
 static inline ECP::Point ToMontgomery(const ModularArithmetic &mr, const ECP::Point &P)
 {
-	return P.identity ? P : ECP::Point(mr.ConvertIn(P.x), mr.ConvertIn(P.y));
+	return P.identity() ? P : ECP::Point(mr.ConvertIn(P.x), mr.ConvertIn(P.y));
 }
 
 static inline ECP::Point FromMontgomery(const ModularArithmetic &mr, const ECP::Point &P)
 {
-	return P.identity ? P : ECP::Point(mr.ConvertOut(P.x), mr.ConvertOut(P.y));
+	return P.identity() ? P : ECP::Point(mr.ConvertOut(P.x), mr.ConvertOut(P.y));
 }
 NAMESPACE_END
 
@@ -78,7 +78,7 @@ bool ECP::DecodePoint(ECP::Point &P, BufferedTransformation &bt, size_t encodedP
 	switch (type)
 	{
 	case 0:
-		P.identity = true;
+		//P.identity = true;
 		return true;
 	case 2:
 	case 3:
@@ -88,7 +88,7 @@ bool ECP::DecodePoint(ECP::Point &P, BufferedTransformation &bt, size_t encodedP
 
 		Integer p = FieldSize();
 
-		P.identity = false;
+		//P.identity = false;
 		P.x.Decode(bt, GetField().MaxElementByteLength());
 		P.y = ((P.x*P.x+m_a)*P.x+m_b) % p;
 
@@ -108,7 +108,7 @@ bool ECP::DecodePoint(ECP::Point &P, BufferedTransformation &bt, size_t encodedP
 			return false;
 
 		unsigned int len = GetField().MaxElementByteLength();
-		P.identity = false;
+		//P.identity = false;
 		P.x.Decode(bt, len);
 		P.y.Decode(bt, len);
 		return true;
@@ -120,7 +120,7 @@ bool ECP::DecodePoint(ECP::Point &P, BufferedTransformation &bt, size_t encodedP
 
 void ECP::EncodePoint(BufferedTransformation &bt, const Point &P, bool compressed) const
 {
-	if (P.identity)
+	if (P.identity())
 		NullStore().TransferTo(bt, EncodedPointSize(compressed));
 	else if (compressed)
 	{
@@ -180,20 +180,20 @@ bool ECP::VerifyPoint(const Point &P) const
 {
 	const FieldElement &x = P.x, &y = P.y;
 	Integer p = FieldSize();
-	return P.identity ||
+	return P.identity() ||
 		(!x.IsNegative() && x<p && !y.IsNegative() && y<p
 		&& !(((x*x+m_a)*x+m_b-y*y)%p));
 }
 
 bool ECP::Equal(const Point &P, const Point &Q) const
 {
-	if (P.identity && Q.identity)
+	if (P.identity() && Q.identity())
 		return true;
 
-	if (P.identity && !Q.identity)
+	if (P.identity() && !Q.identity())
 		return false;
 
-	if (!P.identity && Q.identity)
+	if (!P.identity() && Q.identity())
 		return false;
 
 	return (GetField().Equal(P.x,Q.x) && GetField().Equal(P.y,Q.y));
@@ -206,11 +206,11 @@ const ECP::Point& ECP::Identity() const
 
 const ECP::Point& ECP::Inverse(const Point &P) const
 {
-	if (P.identity)
+	if (P.identity())
 		return P;
 	else
 	{
-		m_R.identity = false;
+		//m_R.identity = false;
 		m_R.x = P.x;
 		m_R.y = GetField().Inverse(P.y);
 		return m_R;
@@ -219,8 +219,8 @@ const ECP::Point& ECP::Inverse(const Point &P) const
 
 const ECP::Point& ECP::Add(const Point &P, const Point &Q) const
 {
-	if (P.identity) return Q;
-	if (Q.identity) return P;
+	if (P.identity()) return Q;
+	if (Q.identity()) return P;
 	if (GetField().Equal(P.x, Q.x))
 		return GetField().Equal(P.y, Q.y) ? Double(P) : Identity();
 
@@ -230,13 +230,13 @@ const ECP::Point& ECP::Add(const Point &P, const Point &Q) const
 	m_R.y = GetField().Subtract(GetField().Multiply(t, GetField().Subtract(P.x, x)), P.y);
 
 	m_R.x.swap(x);
-	m_R.identity = false;
+	//m_R.identity = false;
 	return m_R;
 }
 
 const ECP::Point& ECP::Double(const Point &P) const
 {
-	if (P.identity || P.y==GetField().Identity()) return Identity();
+	if (P.identity() || P.y==GetField().Identity()) return Identity();
 
 	FieldElement t = GetField().Square(P.x);
 	t = GetField().Add(GetField().Add(GetField().Double(t), t), m_a);
@@ -245,7 +245,7 @@ const ECP::Point& ECP::Double(const Point &P) const
 	m_R.y = GetField().Subtract(GetField().Multiply(t, GetField().Subtract(P.x, x)), P.y);
 
 	m_R.x.swap(x);
-	m_R.identity = false;
+	//m_R.identity = false;
 	return m_R;
 }
 
@@ -302,7 +302,7 @@ public:
 		: mr(m_mr), firstDoubling(true), negated(false)
 	{
 		CRYPTOPP_UNUSED(m_b);
-		if (Q.identity)
+		if (Q.identity())
 		{
 			sixteenY4 = P.x = P.y = mr.MultiplicativeIdentity();
 			aZ4 = P.z = mr.Identity();
@@ -442,11 +442,11 @@ void ECP::SimultaneousMultiply(ECP::Point *results, const ECP::Point &P, const I
 		for (unsigned int j=0; j<baseIndices[i].size(); j++)
 		{
 			ProjectivePoint &base = bases[baseIndices[i][j]];
-			if (base.z.IsZero())
-				finalCascade[j].base.identity = true;
-			else
+			if (!base.z.IsZero())
+				//finalCascade[j].base.identity = true;
+			//else
 			{
-				finalCascade[j].base.identity = false;
+				//finalCascade[j].base.identity = false;
 				finalCascade[j].base.x = base.x;
 				if (negateBase[i][j])
 					finalCascade[j].base.y = GetField().Inverse(base.y);
