@@ -1,3 +1,10 @@
+####################################
+# C++ generic ignore
+# Allows you to use test.cxx and
+# avoid getting in the way of things
+####################################
+*.cxx
+
 ####################
 ## Crypto++ specific
 ####################
@@ -30,6 +37,18 @@ a.out
 ## changed a behavior somewhere along the lines
 
 *.o
+
+#################
+## Emacs
+#################
+*~
+\#*\#
+
+#################
+## Vi swap
+#################
+*.swp
+*.swo
 
 #################
 ## Eclipse
@@ -73,12 +92,16 @@ local.properties
 *.suo
 *.user
 *.sdf
+/.vs
 
 # Build results
 
 [Dd]ebug/
 [Rr]elease/
+Win32/
 x64/
+Arm/
+Arm64/
 build/
 [Bb]in/
 [Oo]bj/

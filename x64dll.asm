@@ -1,3 +1,14 @@
+;; https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention
+;; The first four integer arguments are passed in registers.
+;; Integer values are passed in left-to-right order in RCX,
+;; RDX, R8, and R9, respectively. Arguments five and higher
+;; are passed on the stack.
+
+;; The registers RAX, RCX, RDX, R8, R9, R10, R11, XMM0-5,
+;; and the upper portions of YMM0-15 and ZMM0-15 are
+;; considered volatile and must be considered destroyed on
+;; function calls.
+
 include ksamd64.inc
 EXTERNDEF ?Te@rdtable@CryptoPP@@3PA_KA:FAR
 EXTERNDEF ?g_cacheLineSize@CryptoPP@@3IA:FAR
@@ -58,7 +69,7 @@ $1@Baseline_Sub:
 Baseline_Sub ENDP
 
 ALIGN   8
-Rijndael_Enc_AdvancedProcessBlocks	PROC FRAME
+Rijndael_Enc_AdvancedProcessBlocks_SSE2	PROC FRAME
 rex_push_reg rsi
 push_reg rdi
 push_reg rbx
@@ -454,10 +465,10 @@ pop rbx
 pop rdi
 pop rsi
 ret
-Rijndael_Enc_AdvancedProcessBlocks ENDP
+Rijndael_Enc_AdvancedProcessBlocks_SSE2 ENDP
 
 ALIGN   8
-GCM_AuthenticateBlocks_2K	PROC FRAME
+GCM_AuthenticateBlocks_2K_SSE2	PROC FRAME
 rex_push_reg rsi
 push_reg rdi
 push_reg rbx
@@ -593,10 +604,10 @@ pop rbx
 pop rdi
 pop rsi
 ret
-GCM_AuthenticateBlocks_2K ENDP
+GCM_AuthenticateBlocks_2K_SSE2 ENDP
 
 ALIGN   8
-GCM_AuthenticateBlocks_64K	PROC FRAME
+GCM_AuthenticateBlocks_64K_SSE2	PROC FRAME
 rex_push_reg rsi
 push_reg rdi
 .endprolog
@@ -673,10 +684,10 @@ movdqa [rsi], xmm0
 pop rdi
 pop rsi
 ret
-GCM_AuthenticateBlocks_64K ENDP
+GCM_AuthenticateBlocks_64K_SSE2 ENDP
 
 ALIGN   8
-SHA256_SSE_HashMultipleBlocks	PROC FRAME
+SHA256_HashMultipleBlocks_SSE2	PROC FRAME
 rex_push_reg rsi
 push_reg rdi
 push_reg rbx
@@ -1962,7 +1973,7 @@ pop		rbx
 pop		rdi
 pop		rsi
 ret
-SHA256_SSE_HashMultipleBlocks ENDP
+SHA256_HashMultipleBlocks_SSE2 ENDP
 
 _TEXT ENDS
 END

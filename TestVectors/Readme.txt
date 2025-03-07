@@ -24,7 +24,8 @@ before the Test field.
 Data Types
 ==========
 
-int - small integer (less than 2^32) in decimal representation
+signed int - small integer (less than 2^32) in decimal representation
+unsigned long - large integer (less than 2^64) convertible by strtoul or strtoull
 string - human readable string
 encoded string - can be one of the following
 	- quoted string: "message" means "message" without the quotes
@@ -57,7 +58,7 @@ PublicElement - the public element when KeyFormat=Component
 PrivateExponent - the private exponent when KeyFormat=Component
 Message - encoded string, message to be signed or verified
 Signature - encoded string, signature to be verified or compared with
-BlockSize - encoded string, block size for vaiable block ciphers
+BlockSize - encoded string, block size for variable block ciphers
 Plaintext - encoded string
 Ciphertext - encoded string
 Header - encoded string
@@ -68,6 +69,7 @@ DerivedLength - encoded string
 Digest - encoded string
 TruncatedSize - int, size of truncated digest in bytes
 Seek - int, seek location for random access ciphers
+Seek64 - unsigned long, seek location for random access ciphers
 (more to come here)
 
 Possible Tests
